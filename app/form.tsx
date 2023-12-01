@@ -4,16 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export const Form = () => {
-
-
+export const Form = ({ transformUrlToCode }: { transformUrlToCode: (url: string) => void }) => {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
         const form = event.currentTarget
         const url = form.elements.namedItem('url') as HTMLInputElement
 
-        console.log(url.value)
+        transformUrlToCode(url.value)
     }
 
     return (
