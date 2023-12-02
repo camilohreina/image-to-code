@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { Form } from './form'
+import { DragAndDrop } from './draganddrop'
 
 const STEPS = {
   INITIAL: 'INITIAL',
@@ -9,9 +10,17 @@ const STEPS = {
   ERROR: 'ERROR',
 }
 
+const toBase64 = (file: File) => {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = error => reject(error)
+  })
+}
+
 //generator function
 async function* streamReader(res: Response) {
-
   const reader = res.body?.getReader()
   const decoder = new TextDecoder()
   if (reader == null) return
@@ -30,11 +39,12 @@ export default function Home() {
   const [result, setResult] = useState('')
   const [step, setStep] = useState(STEPS.INITIAL)
 
-  const transformUrlToCode = async (url: string) => {
+
+  const transformToCode = async (body: string) => {
     setStep(STEPS.LOADING)
     const res = await fetch('/api/generate-code-from-image', {
       method: 'POST',
-      body: JSON.stringify({ url }),
+      body,
       headers: { 'Content-Type': 'application/json' },
     })
 
@@ -42,36 +52,39 @@ export default function Home() {
       setStep(STEPS.ERROR)
       throw new Error("Error creating code")
     }
-
     setStep(STEPS.PREVIEW)
-
     //read data streaming request
     for await (const chunk of streamReader(res)) {
       setResult(prev => prev + chunk)
     }
-
-
   }
+
+  const transformImageToCode = async (file: File) => {
+    const img = await toBase64(file)
+    await transformToCode(JSON.stringify({ img }))
+  }
+
+  const transformUrlToCode = async (url: string) => {
+    setStep(STEPS.LOADING)
+    await transformToCode(JSON.stringify({ url }))
+  }
+
+  const [background, html = ''] = result.split('|||')
+
   return (
-    <div className="grid grid-cols-[400px_1fr]">
-      <aside className='flex flex-col justify-between min-h-screen p-4 bg-gray-900 '>
-        <header className='text-center'>
-          <h1 className='text-3xl font-semibold'>Image 2 Code</h1>
-          <h2 className='text-sm opacity-75'>Pass one image to code in seconds...</h2>
-        </header>
+    <div className=' flex flex-col gap-4 my-10'>
+      <header className='text-center'>
+        <h1 className='text-3xl font-semibold' > Image 2 Code</h1 >
+        <h2 className='text-sm opacity-75'>Build code from one image...</h2>
+      </header >
 
-        <section>
-          {/* Filters will be here */}
-        </section>
-
-        <footer>
-          Desarrollado por xDiffrent
-        </footer>
-      </aside>
-      <main className='bg-gray-950'>
+      <main >
         <section className='max-w-5xl w-full  mx-auto p-10'>
           {step === STEPS.INITIAL && (
-            <Form transformUrlToCode={transformUrlToCode} />
+            <div className='flex flex-col gap-4 m-auto'>
+              <DragAndDrop transformImageToCode={transformImageToCode} />
+              <Form transformUrlToCode={transformUrlToCode} />
+            </div>
           )}
           {step === STEPS.LOADING && (
             <div className='flex items-center justify-center h-full'>
@@ -87,15 +100,22 @@ export default function Home() {
           {
             step === STEPS.PREVIEW && (
               <div className='rounded flex flex-col gap-4'>
-                <iframe srcDoc={result} className='w-full h-full border-4 rounded border-gray-700 aspect-video' />
+                <div className='w-full h-full border-4 rounded border-gray-700 aspect-video' style={{ backgroundColor: `#${background ? background.trim() : 'fff'}` }}>
+                  <iframe srcDoc={html} className='w-full h-full' />
+                </div>
                 <pre>
-                  <code>{result}</code>
+                  <div className='p-4 bg-black rounded-md overflow-y-auto'>
+                    <code>{html}</code>
+                  </div>
                 </pre>
               </div>
             )
           }
         </section>
       </main>
-    </div>
+      <footer className='text-center'>
+        Coded with <svg className="inline-block h-5 mb-1 mx-1 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"> <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path> </svg> by Camilo Hernández
+      </footer>
+    </div >
   )
 }

@@ -7,8 +7,6 @@ const SYSTEM_PROMPT = `"""
 You are an expert Tailwind developer
 You take screenshots of a reference web page from the user, and then build single page apps 
 using Tailwind, HTML and JS.
-You might also be given a screenshot (The second image) of a web page that you have already built, and asked to
-update it to look more like the reference image(The first image).
 
 - Make sure the app looks exactly like the screenshot.
 - Pay close attention to background color, text color, font size, font family, 
@@ -24,7 +22,7 @@ In terms of libraries,
 - You can use Google Fonts
 - Font Awesome for icons: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
 
-Return only the full code in <html></html> tags.
+Return first the background hexadecimals, put a ||| separator, and then all the html code blocks
 Do not include markdown "\`\`\`" or "\`\`\`html" at the start or end.
 """`;
 
@@ -35,7 +33,9 @@ const openai = new OpenAI({
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  const { url } = await req.json();
+  const { url, img } = await req.json();
+
+  const image = url ?? img;
   const response = await openai.chat.completions.create({
     model: "gpt-4-vision-preview",
     stream: true,
@@ -54,7 +54,7 @@ export async function POST(req: Request) {
           },
           {
             type: "image_url",
-            image_url: url,
+            image_url: image,
           },
         ],
       },
