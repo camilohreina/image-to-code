@@ -149,7 +149,10 @@ export default function Home() {
         </section>
       </main>
       <footer className='text-center'>
-        Coded with <svg className="inline-block h-5 mb-1 mx-1 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"> <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path> </svg> by Camilo Hernández
+        Coded with
+        <svg className="inline-block h-5 mb-1 mx-1 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg> by <a className='hover:text-sky-400' target="_blank" href="https://xdiffernt.com/">Camilo Hernández</a>
       </footer>
     </div >
   )
