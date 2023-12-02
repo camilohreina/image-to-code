@@ -117,7 +117,10 @@ export default function Home() {
           {
             step === STEPS.PREVIEW && (
               <div className='rounded flex flex-col gap-4'>
-                <div className='w-full h-full border-4 rounded border-gray-700 aspect-video' style={{ backgroundColor: `#${background ? background.trim() : 'fff'}` }}>
+                <div
+                  className='w-full h-full border-4 rounded border-gray-700 aspect-video'
+                  style={{ backgroundColor: `#${background ? background.trim() : 'fff'}` }}
+                >
                   <iframe srcDoc={html} className='w-full h-full' />
                 </div>
                 <pre>
