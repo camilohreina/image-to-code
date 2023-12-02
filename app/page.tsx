@@ -9,6 +9,23 @@ const STEPS = {
   ERROR: 'ERROR',
 }
 
+//generator function
+async function* streamReader(res: Response) {
+
+  const reader = res.body?.getReader()
+  const decoder = new TextDecoder()
+  if (reader == null) return
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    if (value) {
+      const chunk = decoder.decode(value)
+      yield chunk
+    }
+  }
+}
+
 export default function Home() {
   const [result, setResult] = useState('')
   const [step, setStep] = useState(STEPS.INITIAL)
@@ -26,20 +43,14 @@ export default function Home() {
       throw new Error("Error creating code")
     }
 
-
     setStep(STEPS.PREVIEW)
-    //read data streaming request
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
 
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      if (value) {
-        const chunk = decoder.decode(value)
-        setResult(prevResult => prevResult + chunk)
-      }
+    //read data streaming request
+    for await (const chunk of streamReader(res)) {
+      setResult(prev => prev + chunk)
     }
+
+
   }
   return (
     <div className="grid grid-cols-[400px_1fr]">
