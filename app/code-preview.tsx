@@ -2,8 +2,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { DisplayCode } from "./display-code";
 import { CodeReview } from "./code-review";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { FormChat } from "./form-chat";
 
 export const CodePreview = ({ background, html }: { background: string, html: string }) => {
