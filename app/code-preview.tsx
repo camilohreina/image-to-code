@@ -3,8 +3,31 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { DisplayCode } from "./display-code";
 import { CodeReview } from "./code-review";
 import { FormChat } from "./form-chat";
+import html2canvas from "html2canvas";
 
-export const CodePreview = ({ background, html }: { background: string, html: string }) => {
+export const CodePreview = ({ updateComponentToCode, background, html }: { updateComponentToCode: (url: string, prompt: string) => void, background: string, html: string }) => {
+
+    const takeScreenshot = async (): Promise<string> => {
+        const iframeElement = document.querySelector(
+            "#preview-code"
+        ) as HTMLIFrameElement;
+
+        if (!iframeElement?.contentWindow?.document.body) {
+            return "";
+        }
+
+        const canvas = await html2canvas(iframeElement.contentWindow.document.body);
+        const png = canvas.toDataURL("image/png");
+        return png;
+    };
+
+    const updateComponentByPrompt = async (prompt: string) => {
+        const resultImage = await takeScreenshot();
+        updateComponentToCode(resultImage, prompt)
+    }
+
+
+
     return (
         <div className='rounded flex flex-col gap-4'>
             <Tabs defaultValue="preview" >
@@ -19,7 +42,7 @@ export const CodePreview = ({ background, html }: { background: string, html: st
                     <CodeReview html={html} />
                 </TabsContent>
             </Tabs>
-            <FormChat />
+            <FormChat updateComponentByPrompt={updateComponentByPrompt} />
         </div>
     )
 

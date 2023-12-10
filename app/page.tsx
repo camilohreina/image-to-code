@@ -40,17 +40,15 @@ async function* streamReader(res: Response) {
 export default function Home() {
   const [result, setResult] = useState('')
   const [step, setStep] = useState(STEPS.INITIAL)
-  const [isCopied, setIsCopied] = useState(false)
-  const codeRef = useRef<HTMLDivElement>(null);
 
   const transformToCode = async (body: string) => {
     setStep(STEPS.LOADING)
+    setResult('')
     const res = await fetch('/api/generate-code-from-image', {
       method: 'POST',
       body,
       headers: { 'Content-Type': 'application/json' },
     })
-
     if (!res.ok || res.body == null) {
       setStep(STEPS.ERROR)
       throw new Error("Error creating code")
@@ -67,8 +65,11 @@ export default function Home() {
     await transformToCode(JSON.stringify({ img }))
   }
 
+  const updateComponentToCode = async (base64: string, prompt: string) => {
+    await transformToCode(JSON.stringify({ img: base64, prompt }))
+  }
+
   const transformUrlToCode = async (url: string) => {
-    setStep(STEPS.LOADING)
     await transformToCode(JSON.stringify({ url }))
   }
 
@@ -95,7 +96,7 @@ export default function Home() {
           )}
           {
             step === STEPS.PREVIEW && (
-              <CodePreview background={background} html={html} />
+              <CodePreview updateComponentToCode={updateComponentToCode} background={background} html={html} />
             )
           }
         </section>
