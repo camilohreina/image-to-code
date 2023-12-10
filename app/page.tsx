@@ -40,6 +40,7 @@ async function* streamReader(res: Response) {
 export default function Home() {
   const [result, setResult] = useState('')
   const [step, setStep] = useState(STEPS.INITIAL)
+  const [limit, setLimit] = useState(0)
 
   const transformToCode = async (body: string) => {
     setStep(STEPS.LOADING)
@@ -55,6 +56,7 @@ export default function Home() {
     }
     setStep(STEPS.PREVIEW)
     //read data streaming request
+    setLimit(prev => prev + 1)
     for await (const chunk of streamReader(res)) {
       setResult(prev => prev + chunk)
     }
@@ -96,7 +98,7 @@ export default function Home() {
           )}
           {
             step === STEPS.PREVIEW && (
-              <CodePreview updateComponentToCode={updateComponentToCode} background={background} html={html} />
+              <CodePreview limit={limit} updateComponentToCode={updateComponentToCode} background={background} html={html} />
             )
           }
         </section>

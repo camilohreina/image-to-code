@@ -5,7 +5,7 @@ import { CodeReview } from "./code-review";
 import { FormChat } from "./form-chat";
 import html2canvas from "html2canvas";
 
-export const CodePreview = ({ updateComponentToCode, background, html }: { updateComponentToCode: (url: string, prompt: string) => void, background: string, html: string }) => {
+export const CodePreview = ({ updateComponentToCode, background, html, limit }: { updateComponentToCode: (url: string, prompt: string) => void, background: string, html: string, limit: number }) => {
 
     const takeScreenshot = async (): Promise<string> => {
         const iframeElement = document.querySelector(
@@ -26,8 +26,6 @@ export const CodePreview = ({ updateComponentToCode, background, html }: { updat
         updateComponentToCode(resultImage, prompt)
     }
 
-
-
     return (
         <div className='rounded flex flex-col gap-4'>
             <Tabs defaultValue="preview" >
@@ -42,7 +40,7 @@ export const CodePreview = ({ updateComponentToCode, background, html }: { updat
                     <CodeReview html={html} />
                 </TabsContent>
             </Tabs>
-            <FormChat updateComponentByPrompt={updateComponentByPrompt} />
+            {limit < 2 && <FormChat updateComponentByPrompt={updateComponentByPrompt} />}
         </div>
     )
 
