@@ -6,7 +6,7 @@ This simple app converts a screenshot to code (HTML/Tailwind CSS). It uses GPT-4
 
 https://github.com/camilohreina/image-to-code/assets/59514545/0c707a70-018a-477f-afec-dd7ae8cc3cf2
 
-## 🌟 Recent Updates
+## Recent Updates
 - Dec 10 - You can now instruct the AI to update the code as you wish. It is helpful if the AI messed up some styles or missed a section. (limit 2 times by component for now)
 
 
