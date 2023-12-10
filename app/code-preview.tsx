@@ -40,7 +40,7 @@ export const CodePreview = ({ updateComponentToCode, background, html, limit }: 
                     <CodeReview html={html} />
                 </TabsContent>
             </Tabs>
-            {limit < 2 && <FormChat updateComponentByPrompt={updateComponentByPrompt} />}
+            {limit < 3 && <FormChat updateComponentByPrompt={updateComponentByPrompt} />}
         </div>
     )
 
