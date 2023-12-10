@@ -1,7 +1,7 @@
-import OpenAI from "openai";
-import { OpenAIStream, StreamingTextResponse } from "ai";
+import OpenAI from 'openai';
+import { OpenAIStream, StreamingTextResponse } from 'ai';
 
-const USER_PROMPT = "Generate code for a web page that looks exactly like this";
+const USER_PROMPT = 'Generate code for a web page that looks exactly like this';
 
 const SYSTEM_PROMPT = `"""
 You are an expert Tailwind developer
@@ -27,38 +27,40 @@ Do not include markdown "\`\`\`" or "\`\`\`html" at the start or end.
 """`;
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-export const runtime = "edge";
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const { url, img } = await req.json();
-
+  const { url, img, prompt } = await req.json();
   const image = url ?? img;
+  if (!image) throw new Error('No image provided');
+
   const response = await openai.chat.completions.create({
-    model: "gpt-4-vision-preview",
+    model: 'gpt-4-vision-preview',
     stream: true,
     max_tokens: 4096,
+    temperature: 0,
     messages: [
       {
-        role: "system",
-        content: SYSTEM_PROMPT,
+        role: 'system',
+        content: SYSTEM_PROMPT
       },
       {
-        role: "user",
+        role: 'user',
         content: [
           {
-            type: "text",
-            text: USER_PROMPT,
+            type: 'text',
+            text: prompt || USER_PROMPT
           },
           {
-            type: "image_url",
-            image_url: image,
-          },
-        ],
-      },
-    ],
+            type: 'image_url',
+            image_url: { url: image, detail: 'high' }
+          }
+        ]
+      }
+    ]
   });
   const stream = OpenAIStream(response);
   return new StreamingTextResponse(stream);
