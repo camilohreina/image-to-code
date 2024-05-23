@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { NextResponse, type NextRequest } from 'next/server';
 
 const USER_PROMPT = 'Generate a list of tasks from the following requirement';
 
@@ -19,7 +20,11 @@ const openai = new OpenAI({
 
 export const runtime = 'edge';
 
-export async function POST(req: Request) {
+export const GET = async (request: NextRequest) => {};
+
+export async function POST(req: NextRequest) {
+  // Get JSON payload
+
   const { prompt } = await req.json();
 
   const response = await openai.chat.completions.create({

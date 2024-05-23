@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   ) {
     response.headers.set('Access-Control-Allow-Origin', origin);
   }
-
+  console.log(request.headers.get('origin'));
   // Set default CORS headers
   response.headers.set(
     'Access-Control-Allow-Credentials',
